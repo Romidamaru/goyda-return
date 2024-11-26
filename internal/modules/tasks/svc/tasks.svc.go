@@ -21,18 +21,14 @@ func (s *TasksService) GetTasks() ([]ent.Task, error) {
 	return tasks, nil
 }
 
-//
-//func (s *TasksService) GetTaskByID(id int) (*ent.Task, error) {
-//	ent.Mu.Lock()
-//	defer ent.Mu.Unlock()
-//
-//	for _, task := range ent.Tasks {
-//		if task.ID == id {
-//			return &task, nil
-//		}
-//	}
-//	return nil, fmt.Errorf("task with ID %d not found", id)
-//}
+func (s *TasksService) GetTaskByID(id int) (ent.Task, error) {
+	var task ent.Task
+	if err := s.DB.First(&task, id).Error; err != nil {
+		return ent.Task{}, err
+	}
+
+	return task, nil
+}
 
 func (s *TasksService) CreateTask(task ent.Task) (ent.Task, error) {
 	// Use GORM to create the task in the database

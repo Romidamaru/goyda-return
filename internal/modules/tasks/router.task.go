@@ -22,7 +22,7 @@ func InitTaskRouter(router *gin.Engine, db *gorm.DB) *TaskRouter {
 	router.GET("/tasks", taskController.GetTasks)
 	// You can add more routes here, such as POST, PUT, DELETE
 	router.POST("/tasks", taskController.CreateTask)
-	// router.GET("/tasks/:id", taskController.GetTaskById)
+	router.GET("/tasks/:id", taskController.GetTaskById)
 	// router.PUT("/tasks/:id", taskController.UpdateTask)
 	// router.DELETE("/tasks/:id", taskController.DeleteTask)
 
