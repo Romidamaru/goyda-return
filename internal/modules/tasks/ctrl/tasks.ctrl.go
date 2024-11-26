@@ -98,49 +98,70 @@ func (ctrl *TasksController) CreateTask(c *gin.Context) {
 	c.JSON(http.StatusCreated, createdTask)
 }
 
-//
-//func updateTask(c *gin.Context) {
-//	mu.Lock()
-//	defer mu.Unlock()
-//
-//	id, err := strconv.Atoi(c.Param("id"))
-//	if err != nil {
-//		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
-//		return
-//	}
-//
-//	for i, task := range tasks {
-//		if task.ID == id {
-//			if err := c.ShouldBindJSON(&tasks[i]); err != nil {
-//				c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
-//				return
-//			}
-//			tasks[i].ID = id // Ensure ID is preserved
-//			c.JSON(http.StatusOK, tasks[i])
-//			return
-//		}
-//	}
-//
-//	c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
-//}
-//
-//func deleteTask(c *gin.Context) {
-//	mu.Lock()
-//	defer mu.Unlock()
-//
-//	id, err := strconv.Atoi(c.Param("id"))
-//	if err != nil {
-//		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
-//		return
-//	}
-//
-//	for i, task := range tasks {
-//		if task.ID == id {
-//			tasks = append(tasks[:i], tasks[i+1:]...)
-//			c.JSON(http.StatusNoContent, nil)
-//			return
-//		}
-//	}
-//
-//	c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
-//}
+func (ctrl *TasksController) UpdateTask(c *gin.Context) {
+	// Extract task ID from the URL
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
+		return
+	}
+
+	var updateDTO dto.UpdateTask
+
+	// Bind JSON to UpdateTask DTO
+	if err := c.ShouldBindJSON(&updateDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	// Fetch the existing task from the database
+	task, err := ctrl.tSvc.GetTaskByID(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
+		return
+	}
+
+	// Update fields conditionally based on provided values
+	if updateDTO.Name != nil {
+		task.Name = *updateDTO.Name
+	}
+	// In your UpdateTask controller:
+	if updateDTO.Type != nil {
+		task.Type = updateDTO.Type.ConvertToEnt()
+	}
+	if updateDTO.Done != nil {
+		task.Done = *updateDTO.Done
+	}
+
+	// Save the updated task
+	updatedTask, err := ctrl.tSvc.UpdateTask(task)
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update task"})
+		return
+	}
+
+	response := map[string]interface{}{
+		"id":   updatedTask.ID,
+		"name": updatedTask.Name,
+		"type": dto.FromInt(int(updatedTask.Type)),
+		"done": updatedTask.Done,
+	}
+
+	c.JSON(http.StatusOK, response)
+}
+
+func (ctrl *TasksController) DeleteTask(c *gin.Context) {
+	id, err := strconv.Atoi(c.Param("id"))
+	if err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
+		return
+	}
+
+	task, err := ctrl.tSvc.DeleteTask(id)
+	if err != nil {
+		c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
+		return
+	}
+
+	c.JSON(http.StatusOK, task)
+}
