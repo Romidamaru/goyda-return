@@ -13,8 +13,8 @@ type TaskRouter struct {
 func InitTaskRouter(router *gin.Engine) *TaskRouter {
 	controller := ctrl.NewTasksController()
 	router.GET("/tasks", controller.GetTasks)
-	//router.POST("/tasks", createTask)
-	//router.GET("/tasks/:id", getTask)
+	router.POST("/tasks", controller.CreateTask)
+	router.GET("/tasks/:id", controller.GetTaskById)
 	//router.PUT("/tasks/:id", updateTask)
 	//router.DELETE("/tasks/:id", deleteTask)
 	return &TaskRouter{

@@ -1,8 +1,7 @@
 package svc
 
 import (
-	"github.com/gin-gonic/gin"
-	"net/http"
+	"fmt"
 	"simple-api/internal/modules/tasks/ent"
 )
 
@@ -20,19 +19,29 @@ func (s *TasksService) GetTasks() []ent.Task {
 	return ent.Tasks
 }
 
-func (s *TasksService) CreateTask() (ent.Task, error) {
+func (s *TasksService) GetTaskByID(id int) (*ent.Task, error) {
 	ent.Mu.Lock()
 	defer ent.Mu.Unlock()
 
-	var task ent.Task
-	if err := c.ShouldBindJSON(&task); err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
-		return
+	for _, task := range ent.Tasks {
+		if task.ID == id {
+			return &task, nil
+		}
 	}
+	return nil, fmt.Errorf("task with ID %d not found", id)
+}
 
+func (s *TasksService) CreateTask(task ent.Task) (ent.Task, error) {
+	ent.Mu.Lock()
+	defer ent.Mu.Unlock()
+
+	// Assign a new ID to the task
 	task.ID = ent.IdCount
 	ent.IdCount++
-	ent.Tasks = append(ent.Tasks, ent.Task{})
 
-	c.JSON(http.StatusCreated, task)
+	// Add the task to the list
+	ent.Tasks = append(ent.Tasks, task)
+
+	// Return the created task
+	return task, nil
 }
