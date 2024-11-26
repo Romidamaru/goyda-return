@@ -2,45 +2,47 @@ package ctrl
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/mitchellh/mapstructure"
 	"net/http"
 	"simple-api/internal/config"
 	"simple-api/internal/modules/tasks/dto"
 	"simple-api/internal/modules/tasks/ent"
 	"simple-api/internal/modules/tasks/svc"
-	"strconv"
 )
 
 type TasksController struct {
 	tSvc *svc.TasksService
 }
 
-func NewTasksController() *TasksController {
-	return &TasksController{
-		tSvc: svc.NewTasksSVC(),
-	}
+// NewTasksController creates a new TasksController instance
+func NewTasksController(tSvc *svc.TasksService) *TasksController {
+	return &TasksController{tSvc: tSvc}
 }
 
 func (ctrl *TasksController) GetTasks(c *gin.Context) {
-	tasks := ctrl.tSvc.GetTasks()
-	c.JSON(http.StatusOK, tasks)
-}
-
-func (ctrl *TasksController) GetTaskById(c *gin.Context) {
-	id, err := strconv.Atoi(c.Param("id"))
+	tasks, err := ctrl.tSvc.GetTasks() // Fetch tasks from the service (GORM DB)
 	if err != nil {
-		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to retrieve tasks"})
 		return
 	}
 
-	task, err := ctrl.tSvc.GetTaskByID(id)
-	if err != nil {
-		c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
-		return
-	}
-
-	c.JSON(http.StatusOK, task)
+	c.JSON(http.StatusOK, tasks) // Send tasks as a JSON response
 }
+
+//func (ctrl *TasksController) GetTaskById(c *gin.Context) {
+//	id, err := strconv.Atoi(c.Param("id"))
+//	if err != nil {
+//		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid task ID"})
+//		return
+//	}
+//
+//	task, err := ctrl.tSvc.GetTaskByID(id)
+//	if err != nil {
+//		c.JSON(http.StatusNotFound, gin.H{"error": "Task not found"})
+//		return
+//	}
+//
+//	c.JSON(http.StatusOK, task)
+//}
 
 func (ctrl *TasksController) CreateTask(c *gin.Context) {
 	var taskDTO dto.CreateTask
@@ -58,10 +60,9 @@ func (ctrl *TasksController) CreateTask(c *gin.Context) {
 	}
 
 	// Map DTO to Entity
-	var task ent.Task
-	if err := mapstructure.Decode(taskDTO, &task); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to map data"})
-		return
+	task := ent.Task{
+		Name: taskDTO.Name,
+		Done: taskDTO.Done,
 	}
 
 	// Call the service to create the task

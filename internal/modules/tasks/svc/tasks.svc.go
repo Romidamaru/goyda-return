@@ -1,46 +1,44 @@
 package svc
 
 import (
-	"fmt"
+	"gorm.io/gorm"
 	"simple-api/internal/modules/tasks/ent"
 )
 
 type TasksService struct {
+	DB *gorm.DB
 }
 
-func NewTasksSVC() *TasksService {
-	return &TasksService{}
+func NewTasksSVC(db *gorm.DB) *TasksService {
+	return &TasksService{DB: db}
 }
 
-func (s *TasksService) GetTasks() []ent.Task {
-	ent.Mu.Lock()
-	defer ent.Mu.Unlock()
-
-	return ent.Tasks
-}
-
-func (s *TasksService) GetTaskByID(id int) (*ent.Task, error) {
-	ent.Mu.Lock()
-	defer ent.Mu.Unlock()
-
-	for _, task := range ent.Tasks {
-		if task.ID == id {
-			return &task, nil
-		}
+func (s *TasksService) GetTasks() ([]ent.Task, error) {
+	var tasks []ent.Task
+	if err := s.DB.Find(&tasks).Error; err != nil {
+		return nil, err
 	}
-	return nil, fmt.Errorf("task with ID %d not found", id)
+	return tasks, nil
 }
+
+//
+//func (s *TasksService) GetTaskByID(id int) (*ent.Task, error) {
+//	ent.Mu.Lock()
+//	defer ent.Mu.Unlock()
+//
+//	for _, task := range ent.Tasks {
+//		if task.ID == id {
+//			return &task, nil
+//		}
+//	}
+//	return nil, fmt.Errorf("task with ID %d not found", id)
+//}
 
 func (s *TasksService) CreateTask(task ent.Task) (ent.Task, error) {
-	ent.Mu.Lock()
-	defer ent.Mu.Unlock()
-
-	// Assign a new ID to the task
-	task.ID = ent.IdCount
-	ent.IdCount++
-
-	// Add the task to the list
-	ent.Tasks = append(ent.Tasks, task)
+	// Use GORM to create the task in the database
+	if err := s.DB.Create(&task).Error; err != nil {
+		return ent.Task{}, err
+	}
 
 	// Return the created task
 	return task, nil
