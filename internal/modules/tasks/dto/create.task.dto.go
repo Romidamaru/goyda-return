@@ -37,7 +37,8 @@ func FromInt(value int) TaskType {
 }
 
 type CreateTask struct {
-	Name string   `json:"name" validate:"required,min=3"`
-	Type TaskType `json:"type" validate:"required"`
-	Done bool     `json:"done"`
+	Name   string   `json:"name" validate:"required,min=3"`
+	Type   TaskType `json:"type" validate:"required"`
+	Done   bool     `json:"done"`
+	UserID uint     `json:"user_id" validate:"required"` // UserID to associate the task with a specific user (required)
 }
