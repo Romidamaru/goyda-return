@@ -2,7 +2,7 @@ package tasks
 
 import (
 	"github.com/gin-gonic/gin"
-	"gorm.io/gorm"
+	"simple-api/internal/modules/core/db"
 	"simple-api/internal/modules/tasks/ctrl"
 	"simple-api/internal/modules/tasks/svc"
 )
@@ -12,7 +12,7 @@ type TaskRouter struct {
 	router   *gin.Engine
 }
 
-func InitTaskRouter(router *gin.Engine, db *gorm.DB) *TaskRouter {
+func InitTaskRouter(router *gin.Engine, db db.Database) *TaskRouter {
 	// Initialize the service with the database connection
 	taskService := svc.NewTasksSVC(db)
 	// Initialize the controller with the service

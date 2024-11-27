@@ -2,36 +2,27 @@ package main
 
 import (
 	"github.com/gin-gonic/gin"
-	"gorm.io/driver/postgres"
-	"gorm.io/gorm"
 	"log"
 	"simple-api/internal/modules"
-	"simple-api/internal/modules/tasks/ent"
+	"simple-api/internal/modules/core/db"
 )
 
-var db *gorm.DB
-
-func init() {
-	var err error
+func main() {
+	// Database connection details
 	dsn := "postgres://postgres:yura2rubles@localhost:5432/goyda-return?sslmode=disable"
 
-	// Connect to the database using GORM
-	db, err = gorm.Open(postgres.Open(dsn), &gorm.Config{})
+	// Initialize database
+	database, err := db.New(dsn, true).Create(db.PostgresDB)
 	if err != nil {
-		log.Fatalf("failed to connect to database: %v", err)
+		log.Fatalf("Failed to create database instance: %v", err)
 	}
 
-	// Migrate the schema (this will create the tables in the database)
-	err = db.AutoMigrate(&ent.Task{})
-	if err != nil {
-		log.Fatalf("failed to migrate schema: %v", err)
-	}
-}
-
-func main() {
+	// Initialize Gin router and modules
 	router := gin.Default()
+	_ = modules.NewRouter(router, database)
 
-	_ = modules.NewRouter(router, db)
-
-	_ = router.Run(":8080")
+	// Start the server
+	if err := router.Run(":8080"); err != nil {
+		log.Fatalf("failed to start server: %v", err)
+	}
 }
