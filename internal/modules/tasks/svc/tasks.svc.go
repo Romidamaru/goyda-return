@@ -50,7 +50,7 @@ func (s *TasksService) UpdateTask(task ent.Task) (ent.Task, error) {
 
 func (s *TasksService) DeleteTask(id int) (gin.H, error) {
 	var task ent.Task
-	if err := s.DB.Delete(&task).Error; err != nil {
+	if err := s.DB.Delete(&task, id).Error; err != nil {
 		return nil, err
 	}
 	return gin.H{"message": fmt.Sprintf("Task with ID %d has been deleted", id)}, nil
