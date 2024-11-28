@@ -6,6 +6,8 @@ import (
 	"gorm.io/gorm/logger"
 	"log"
 	"os"
+	entTasks "simple-api/internal/modules/tasks/ent"
+	entUsers "simple-api/internal/modules/users/ent"
 	"time"
 )
 
@@ -35,6 +37,11 @@ func NewPostgres(dsn string, enableLogs bool) *Postgres {
 	})
 	if err != nil {
 		log.Fatalf("Failed to connect to PostgreSQL: %v", err)
+	}
+
+	err = db.AutoMigrate(&entUsers.User{}, &entTasks.Task{})
+	if err != nil {
+		log.Fatalf("Failed to auto-migrate models: %v", err)
 	}
 
 	sqlDB, err := db.DB()

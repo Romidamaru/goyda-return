@@ -1,4 +1,4 @@
-package user_ent
+package ent
 
 import (
 	"gorm.io/gorm"
@@ -11,5 +11,5 @@ type User struct {
 	Username string     `gorm:"unique;not null" json:"username"` // Unique username
 	Email    string     `gorm:"unique;not null" json:"email"`    // Unique email address
 	Password string     `gorm:"not null" json:"password"`        // Encrypted password
-	Tasks    []ent.Task `gorm:"foreignKey:UserID" json:"tasks"`  // Relationship to tasks
+	Tasks    []ent.Task `gorm:"foreignKey:UserID"`
 }

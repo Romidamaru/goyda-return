@@ -1,8 +1,7 @@
-package task_ent
+package ent
 
 import (
 	"gorm.io/gorm"
-	user_ent "simple-api/internal/modules/users/ent"
 )
 
 // TaskType represents the allowed values for the Type field
@@ -30,9 +29,8 @@ func (t TaskType) String() string {
 // Task represents a task model for GORM
 type Task struct {
 	gorm.Model
-	Name   string        `gorm:"not null" json:"name"`           // Name of the task
-	Type   TaskType      `gorm:"type:int;default:0" json:"type"` // Task type (Personal, Work, Other)
-	Done   bool          `json:"done"`                           // Whether the task is completed
-	UserID uint          `gorm:"not null" json:"user_id"`        // Foreign key to User (who owns the task)
-	User   user_ent.User `gorm:"foreignKey:UserID" json:"user"`  // Relationship to the User model (belongs to)
+	Name   string   `gorm:"not null" json:"name"`           // Name of the task
+	Type   TaskType `gorm:"type:int;default:0" json:"type"` // Task type (Personal, Work, Other)
+	Done   bool     `json:"done"`                           // Whether the task is completed
+	UserID uint     `gorm:"not null" json:"user_id"`        // Foreign key to User
 }

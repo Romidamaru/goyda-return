@@ -83,9 +83,10 @@ func (ctrl *TasksController) CreateTask(c *gin.Context) {
 
 	// Map DTO to Entity
 	task := ent.Task{
-		Name: taskDTO.Name,
-		Done: taskDTO.Done,
-		Type: ent.TaskType(taskDTO.Type.ToInt()),
+		Name:   taskDTO.Name,
+		Done:   taskDTO.Done,
+		Type:   ent.TaskType(taskDTO.Type.ToInt()),
+		UserID: taskDTO.UserID, // Ensure UserID is correctly assigned
 	}
 
 	// Call the service to create the task
@@ -95,6 +96,7 @@ func (ctrl *TasksController) CreateTask(c *gin.Context) {
 		return
 	}
 
+	// Return the created task as a response
 	c.JSON(http.StatusCreated, createdTask)
 }
 
