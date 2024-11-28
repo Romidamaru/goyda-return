@@ -22,7 +22,8 @@ func (t *TaskType) ConvertToEnt() ent.TaskType {
 
 // UpdateTask - DTO for updating a task
 type UpdateTask struct {
-	Name *string   `json:"name,omitempty"` // Pointer to allow optional value
-	Type *TaskType `json:"type,omitempty"` // Pointer to allow optional value
-	Done *bool     `json:"done,omitempty"` // Pointer to allow optional value
+	Name        *string   `json:"name,omitempty"`        // Pointer to allow optional value
+	Description *string   `json:"description,omitempty"` // Optional description field
+	Type        *TaskType `json:"type,omitempty"`        // Pointer to allow optional value
+	Done        *bool     `json:"done,omitempty"`        // Pointer to allow optional value
 }

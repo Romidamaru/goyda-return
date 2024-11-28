@@ -29,8 +29,9 @@ func (t TaskType) String() string {
 // Task represents a task model for GORM
 type Task struct {
 	gorm.Model
-	Name   string   `gorm:"not null" json:"name"`           // Name of the task
-	Type   TaskType `gorm:"type:int;default:0" json:"type"` // Task type (Personal, Work, Other)
-	Done   bool     `json:"done"`                           // Whether the task is completed
-	UserID uint     `gorm:"not null" json:"user_id"`        // Foreign key to User
+	Name        string   `gorm:"not null" json:"name"`           // Name of the task
+	Description *string  `gorm:"type:text" json:"description"`   // Optional task description
+	Type        TaskType `gorm:"type:int;default:0" json:"type"` // Task type (Personal, Work, Other)
+	Done        bool     `json:"done"`                           // Whether the task is completed
+	UserID      uint     `gorm:"not null" json:"user_id"`        // Foreign key to User
 }

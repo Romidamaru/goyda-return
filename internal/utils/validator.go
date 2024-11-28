@@ -15,6 +15,6 @@ func NewValidator() *Validator {
 }
 
 // ValidateStruct validates the given struct and returns an error if validation fails.
-func (v *Validator) ValidateStruct(s interface{}) error {
+func (v *Validator) ValidateStruct(s any) error {
 	return v.validate.Struct(s)
 }
