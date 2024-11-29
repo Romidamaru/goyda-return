@@ -118,3 +118,29 @@ func (ctrl *UsersController) UpdateUsername(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Username updated successfully"})
 }
+
+func (ctrl *UsersController) RecoverPassword(c *gin.Context) {
+	var recoverDTO dto.RecoverPasswordUser
+
+	// Bind the request JSON body
+	if err := c.ShouldBindJSON(&recoverDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	// Retrieve userID from context (set by AuthMiddleware)
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in context"})
+		return
+	}
+
+	// Update the password of username
+	err := ctrl.uSvc.RecoverPassword(userID.(uint), recoverDTO.Password, recoverDTO.NewPassword) // Define the err variable
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to recover password"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Password updated successfully"})
+}

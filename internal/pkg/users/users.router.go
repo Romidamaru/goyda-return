@@ -27,7 +27,8 @@ func InitUserRouter(router *gin.Engine, db db.Database) *UserRouter {
 	router.POST("/users/register", userController.Register) // Endpoint to create a new user
 	router.POST("/users/login", userController.Login)       // Endpoint to create a new user
 	//router.GET("/users/:id", userController.GetUserById) // Endpoint to fetch a user by ID
-	router.Use(middleware.AuthMiddleware()).PUT("/users/:id", userController.UpdateUsername) // Endpoint to update a user by ID
+	router.Use(middleware.AuthMiddleware()).PUT("/users/:id", userController.UpdateUsername)
+	router.Use(middleware.AuthMiddleware()).PUT("/users/recover/:id", userController.RecoverPassword) // Endpoint to update a user by ID
 	//router.DELETE("/users/:id", userController.DeleteUser) // Endpoint to delete a user by ID
 
 	return &UserRouter{
