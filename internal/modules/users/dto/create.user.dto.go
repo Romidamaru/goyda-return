@@ -1,8 +1,20 @@
 package dto
 
-// CreateUserDTO represents the data required to create a new user
-type CreateUserDTO struct {
-	Username string `json:"username" binding:"required"`
-	Email    string `json:"email" binding:"required,email"`
-	Password string `json:"password" binding:"required,min=8"` // Simple validation: password must have at least 8 characters
+import (
+	"simple-api/internal/modules/users/ent"
+	"simple-api/internal/utils"
+)
+
+type CreateUser struct {
+	Username string `json:"username" validate:"required,alphanum,min=3,max=20"`
+	Email    string `json:"email" validate:"required,email"`
+	Password string `json:"password" validate:"required,min=8"`
+}
+
+func (dto *CreateUser) ToEntity() ent.User {
+	return ent.User{
+		Username: dto.Username,
+		Email:    dto.Email,
+		Password: utils.HashPassword(dto.Password),
+	}
 }
