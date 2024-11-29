@@ -3,10 +3,10 @@ package ctrl
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"simple-api/internal/config"
-	"simple-api/internal/modules/tasks/dto"
-	"simple-api/internal/modules/tasks/ent"
-	"simple-api/internal/modules/tasks/svc"
+	"simple-api/internal/core/config"
+	"simple-api/internal/pkg/tasks/dto"
+	"simple-api/internal/pkg/tasks/ent"
+	"simple-api/internal/pkg/tasks/svc"
 	"strconv"
 )
 

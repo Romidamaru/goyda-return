@@ -2,7 +2,7 @@ package ent
 
 import (
 	"gorm.io/gorm"
-	"simple-api/internal/modules/tasks/ent"
+	"simple-api/internal/pkg/tasks/ent"
 )
 
 // User represents a user model for GORM

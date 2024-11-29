@@ -1,6 +1,6 @@
 package dto
 
-import "simple-api/internal/modules/tasks/ent"
+import "simple-api/internal/pkg/tasks/ent"
 
 // ConvertToEnt converts a dto.TaskType (string) to ent.TaskType (int)
 func (t *TaskType) ConvertToEnt() ent.TaskType {

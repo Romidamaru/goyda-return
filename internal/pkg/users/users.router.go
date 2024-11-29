@@ -2,10 +2,11 @@ package users
 
 import (
 	"github.com/gin-gonic/gin"
-	"simple-api/internal/modules/auth/svc"
-	"simple-api/internal/modules/core/db"
-	"simple-api/internal/modules/users/ctrl"
-	userSvc "simple-api/internal/modules/users/svc"
+	"simple-api/internal/core/db"
+	"simple-api/internal/core/middleware"
+	"simple-api/internal/pkg/auth/svc"
+	"simple-api/internal/pkg/users/ctrl"
+	userSvc "simple-api/internal/pkg/users/svc"
 )
 
 type UserRouter struct {
@@ -26,7 +27,7 @@ func InitUserRouter(router *gin.Engine, db db.Database) *UserRouter {
 	router.POST("/users/register", userController.Register) // Endpoint to create a new user
 	router.POST("/users/login", userController.Login)       // Endpoint to create a new user
 	//router.GET("/users/:id", userController.GetUserById) // Endpoint to fetch a user by ID
-	//router.PUT("/users/:id", userController.UpdateUser)  // Endpoint to update a user by ID
+	router.Use(middleware.AuthMiddleware()).PUT("/users/:id", userController.UpdateUsername) // Endpoint to update a user by ID
 	//router.DELETE("/users/:id", userController.DeleteUser) // Endpoint to delete a user by ID
 
 	return &UserRouter{

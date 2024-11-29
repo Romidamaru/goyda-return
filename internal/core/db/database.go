@@ -3,7 +3,7 @@ package db
 import (
 	"fmt"
 	"gorm.io/gorm"
-	"simple-api/internal/modules/core/db/pg"
+	"simple-api/internal/core/db/pg"
 )
 
 // Database defines the common methods for database operations

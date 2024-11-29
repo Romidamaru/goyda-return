@@ -2,8 +2,8 @@ package svc
 
 import (
 	"fmt"
-	"simple-api/internal/modules/core/db"
-	"simple-api/internal/modules/users/ent"
+	"simple-api/internal/core/db"
+	"simple-api/internal/pkg/users/ent"
 	"simple-api/internal/utils"
 )
 
@@ -22,6 +22,12 @@ func NewUsersService(db db.Database) *UsersService {
 func (s *UsersService) IsUsernameTaken(username string) bool {
 	var user ent.User
 	err := s.db.GetDB().Where("username = ?", username).First(&user).Error
+	return err == nil
+}
+
+func (s *UsersService) IsEmailTaken(email string) bool {
+	var user ent.User
+	err := s.db.GetDB().Where("email =?", email).First(&user).Error
 	return err == nil
 }
 
@@ -47,4 +53,16 @@ func (s *UsersService) CreateUser(user ent.User) (ent.User, error) {
 	}
 
 	return user, nil
+}
+
+func (s *UsersService) UpdateUsername(userID uint, newUsername string) error {
+	var user ent.User
+	err := s.db.GetDB().Where("id = ?", userID).First(&user).Error
+	if err != nil {
+		return err // User not found
+	}
+
+	// Update the username
+	user.Username = newUsername
+	return s.db.GetDB().Save(&user).Error
 }

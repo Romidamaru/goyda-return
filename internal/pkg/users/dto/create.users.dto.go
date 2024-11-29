@@ -1,7 +1,7 @@
 package dto
 
 import (
-	"simple-api/internal/modules/users/ent"
+	"simple-api/internal/pkg/users/ent"
 	"simple-api/internal/utils"
 )
 

@@ -1,10 +1,10 @@
-package modules
+package pkg
 
 import (
 	"github.com/gin-gonic/gin"
-	"simple-api/internal/modules/core/db"
-	"simple-api/internal/modules/tasks"
-	"simple-api/internal/modules/users"
+	"simple-api/internal/core/db"
+	"simple-api/internal/pkg/tasks"
+	"simple-api/internal/pkg/users"
 )
 
 type Router struct {

@@ -1,11 +1,11 @@
 package svc
 
 import (
+	"simple-api/internal/core/config"
+	"simple-api/internal/core/db"
 	"time"
 
 	"github.com/golang-jwt/jwt/v5"
-	"simple-api/internal/config"
-	"simple-api/internal/modules/core/db"
 )
 
 type AuthService struct {

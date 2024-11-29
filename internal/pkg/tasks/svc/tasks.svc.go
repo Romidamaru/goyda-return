@@ -3,8 +3,8 @@ package svc
 import (
 	"fmt"
 	"github.com/gin-gonic/gin"
-	"simple-api/internal/modules/core/db"
-	"simple-api/internal/modules/tasks/ent"
+	"simple-api/internal/core/db"
+	"simple-api/internal/pkg/tasks/ent"
 )
 
 type TasksService struct {

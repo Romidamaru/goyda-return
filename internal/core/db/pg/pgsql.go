@@ -6,8 +6,8 @@ import (
 	"gorm.io/gorm/logger"
 	"log"
 	"os"
-	entTasks "simple-api/internal/modules/tasks/ent"
-	entUsers "simple-api/internal/modules/users/ent"
+	entTasks "simple-api/internal/pkg/tasks/ent"
+	entUsers "simple-api/internal/pkg/users/ent"
 	"time"
 )
 

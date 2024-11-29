@@ -3,9 +3,9 @@ package ctrl
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"simple-api/internal/modules/auth/svc"
-	"simple-api/internal/modules/users/dto"
-	userService "simple-api/internal/modules/users/svc"
+	"simple-api/internal/pkg/auth/svc"
+	"simple-api/internal/pkg/users/dto"
+	userService "simple-api/internal/pkg/users/svc"
 )
 
 // UsersController defines the methods for handling user-related HTTP requests
@@ -32,6 +32,11 @@ func (ctrl *UsersController) Register(c *gin.Context) {
 	// Check if the username is already taken
 	if ctrl.uSvc.IsUsernameTaken(userDTO.Username) {
 		c.JSON(http.StatusConflict, gin.H{"error": "Username is already taken"})
+		return
+	}
+
+	if ctrl.uSvc.IsEmailTaken(userDTO.Email) {
+		c.JSON(http.StatusConflict, gin.H{"error": "Email is already taken"})
 		return
 	}
 
@@ -80,4 +85,36 @@ func (ctrl *UsersController) Login(c *gin.Context) {
 		"message": "Login successful",
 		"token":   token,
 	})
+}
+
+func (ctrl *UsersController) UpdateUsername(c *gin.Context) {
+	var updateDTO dto.UpdateUser
+
+	// Bind the request JSON body
+	if err := c.ShouldBindJSON(&updateDTO); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Invalid request payload"})
+		return
+	}
+
+	// Retrieve userID from context (set by AuthMiddleware)
+	userID, exists := c.Get("userID")
+	if !exists {
+		c.JSON(http.StatusUnauthorized, gin.H{"error": "User ID not found in context"})
+		return
+	}
+
+	// Check if the username already exists
+	if ctrl.uSvc.IsUsernameTaken(updateDTO.Username) {
+		c.JSON(http.StatusConflict, gin.H{"error": "Username is already taken"})
+		return
+	}
+
+	// Update the user's username
+	err := ctrl.uSvc.UpdateUsername(userID.(uint), updateDTO.Username) // Define the err variable
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to update username"})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Username updated successfully"})
 }

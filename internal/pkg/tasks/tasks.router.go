@@ -2,9 +2,9 @@ package tasks
 
 import (
 	"github.com/gin-gonic/gin"
-	"simple-api/internal/modules/core/db"
-	"simple-api/internal/modules/tasks/ctrl"
-	"simple-api/internal/modules/tasks/svc"
+	"simple-api/internal/core/db"
+	"simple-api/internal/pkg/tasks/ctrl"
+	"simple-api/internal/pkg/tasks/svc"
 )
 
 type TaskRouter struct {
