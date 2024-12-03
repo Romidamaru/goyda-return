@@ -3,9 +3,23 @@ package main
 import (
 	"github.com/gin-gonic/gin"
 	"log"
-	"simple-api/internal/modules"
-	"simple-api/internal/modules/core/db"
+	"simple-api/internal/core/db"
+	"simple-api/internal/pkg"
 )
+
+// TODO:
+// task
+// GET - get tasks list (list of MY tasks by MY userID (from token) related to tasks) (filter showDeleted)
+// POST - create task (create new task for current user by userID(from token))
+// PUT - update task /:taskID (update task's name and description and type ONLY. validate by userId from current token)
+// PATCH - done task /:taskID (mark specific task as DONE by taskID + userID(from token))
+// DELETE - delete task /:taskID (deletes task by id) (paranoid)
+//
+// user
+// POST - auth (refresh tokens)
+// POST - registration (creates new user and returns user jwt token reusing simple method for token from auth) - email should be unique, - username - also should be unique
+// PUT - recover - recovers users password with verification old password
+// DELETE - delete user (cascade) - deletes user and its tasks (user id from token) (NOT paranoid)
 
 func main() {
 	// Database connection details
@@ -17,9 +31,9 @@ func main() {
 		log.Fatalf("Failed to create database instance: %v", err)
 	}
 
-	// Initialize Gin router and modules
+	// Initialize Gin router and pkg
 	router := gin.Default()
-	_ = modules.NewRouter(router, database)
+	_ = pkg.NewRouter(router, database)
 
 	// Start the server
 	if err := router.Run(":8080"); err != nil {

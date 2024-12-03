@@ -3,10 +3,10 @@ package ctrl
 import (
 	"github.com/gin-gonic/gin"
 	"net/http"
-	"simple-api/internal/config"
-	"simple-api/internal/modules/tasks/dto"
-	"simple-api/internal/modules/tasks/ent"
-	"simple-api/internal/modules/tasks/svc"
+	"simple-api/internal/core/config"
+	"simple-api/internal/pkg/tasks/dto"
+	"simple-api/internal/pkg/tasks/ent"
+	"simple-api/internal/pkg/tasks/svc"
 	"strconv"
 )
 
@@ -27,15 +27,16 @@ func (ctrl *TasksController) GetTasks(c *gin.Context) {
 	}
 
 	// Create a slice to hold the task response
-	var taskResponses []map[string]interface{}
+	var taskResponses []map[string]any
 
 	// Iterate over tasks and create response objects
 	for _, task := range tasks {
-		response := map[string]interface{}{
-			"id":   task.ID,
-			"name": task.Name,
-			"type": dto.FromInt(int(task.Type)),
-			"done": task.Done,
+		response := map[string]any{
+			"id":          task.ID,
+			"description": task.Description,
+			"name":        task.Name,
+			"type":        dto.FromInt(int(task.Type)),
+			"done":        task.Done,
 		}
 		taskResponses = append(taskResponses, response)
 	}
@@ -56,11 +57,12 @@ func (ctrl *TasksController) GetTaskById(c *gin.Context) {
 		return
 	}
 
-	response := map[string]interface{}{
-		"id":   task.ID,
-		"name": task.Name,
-		"type": dto.FromInt(int(task.Type)),
-		"done": task.Done,
+	response := map[string]any{
+		"id":          task.ID,
+		"description": task.Description,
+		"name":        task.Name,
+		"type":        dto.FromInt(int(task.Type)),
+		"done":        task.Done,
 	}
 
 	c.JSON(http.StatusOK, response)
@@ -83,9 +85,11 @@ func (ctrl *TasksController) CreateTask(c *gin.Context) {
 
 	// Map DTO to Entity
 	task := ent.Task{
-		Name: taskDTO.Name,
-		Done: taskDTO.Done,
-		Type: ent.TaskType(taskDTO.Type.ToInt()),
+		Name:        taskDTO.Name,
+		Description: taskDTO.Description,
+		Done:        taskDTO.Done,
+		Type:        ent.TaskType(taskDTO.Type.ToInt()),
+		UserID:      taskDTO.UserID, // Ensure UserID is correctly assigned
 	}
 
 	// Call the service to create the task
@@ -95,6 +99,7 @@ func (ctrl *TasksController) CreateTask(c *gin.Context) {
 		return
 	}
 
+	// Return the created task as a response
 	c.JSON(http.StatusCreated, createdTask)
 }
 
@@ -133,6 +138,10 @@ func (ctrl *TasksController) UpdateTask(c *gin.Context) {
 		task.Done = *updateDTO.Done
 	}
 
+	if updateDTO.Description != nil {
+		task.Description = updateDTO.Description
+	}
+
 	// Save the updated task
 	updatedTask, err := ctrl.tSvc.UpdateTask(task)
 	if err != nil {
@@ -140,11 +149,13 @@ func (ctrl *TasksController) UpdateTask(c *gin.Context) {
 		return
 	}
 
-	response := map[string]interface{}{
-		"id":   updatedTask.ID,
-		"name": updatedTask.Name,
-		"type": dto.FromInt(int(updatedTask.Type)),
-		"done": updatedTask.Done,
+	response := map[string]any{
+		"id":          updatedTask.ID,
+		"name":        updatedTask.Name,
+		"description": updateDTO.Description,
+		"type":        dto.FromInt(int(updatedTask.Type)),
+		"done":        updatedTask.Done,
+		"user_id":     task.UserID,
 	}
 
 	c.JSON(http.StatusOK, response)
